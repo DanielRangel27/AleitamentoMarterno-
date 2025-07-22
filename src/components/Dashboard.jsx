@@ -217,28 +217,28 @@ const Dashboard = () => {
   }
 
   // Dados para gráficos
-  const dadosAleitamento = [
-    {
-      nome: 'Amamentação Direta',
-      quantidade: registrosFiltrados.filter(r => r.amamentado_diretamente_seio).length,
-      nomes: registrosFiltrados.filter(r => r.amamentado_diretamente_seio).map(r => r.nome_bebe)
-    },
-    {
-      nome: 'Aleitamento Exclusivo',
-      quantidade: registrosFiltrados.filter(r => r.aleitamento_exclusivo).length,
-      nomes: registrosFiltrados.filter(r => r.aleitamento_exclusivo).map(r => r.nome_bebe)
-    },
-    {
-      nome: 'Uso de Fórmula',
-      quantidade: registrosFiltrados.filter(r => r.uso_formula).length,
-      nomes: registrosFiltrados.filter(r => r.uso_formula).map(r => r.nome_bebe)
-    },
-    {
-      nome: 'Livre Demanda',
-      quantidade: registrosFiltrados.filter(r => r.em_livre_demanda).length,
-      nomes: registrosFiltrados.filter(r => r.em_livre_demanda).map(r => r.nome_bebe)
-    }
+  const indicadoresAleitamento = [
+    { key: 'amamentado_diretamente_seio', nome: 'Amamentação Direta' },
+    { key: 'amamentado_leite_sonda_dedo', nome: 'Leite Sonda-Dedo' },
+    { key: 'amamentado_leite_mamadeira', nome: 'Leite Mamadeira' },
+    { key: 'amamentado_leite_copinho', nome: 'Leite Copinho' },
+    { key: 'em_relactacao', nome: 'Relactação' },
+    { key: 'em_livre_demanda', nome: 'Livre Demanda' },
+    { key: 'aleitamento_exclusivo', nome: 'Aleitamento Exclusivo' },
+    { key: 'aleitamento_predominante', nome: 'Aleitamento Predominante' },
+    { key: 'aleitamento_parcial', nome: 'Aleitamento Parcial' },
+    { key: 'uso_formula', nome: 'Uso de Fórmula' },
+    { key: 'uso_formula_sonda_dedo', nome: 'Fórmula Sonda-Dedo' },
+    { key: 'uso_formula_mamadeira', nome: 'Fórmula Mamadeira' },
+    { key: 'uso_formula_copinho', nome: 'Fórmula Copinho' },
+    { key: 'em_translactacao', nome: 'Translactação' },
   ]
+
+  const dadosAleitamento = indicadoresAleitamento.map(indicador => ({
+    nome: indicador.nome,
+    quantidade: registrosFiltrados.filter(r => r[indicador.key]).length,
+    nomes: registrosFiltrados.filter(r => r[indicador.key]).map(r => r.nome_bebe)
+  }))
 
   const dadosGenero = [
     {
@@ -275,6 +275,24 @@ const Dashboard = () => {
       cor: '#ff0000'
     }
   ]
+
+  const indicadoresMae = [
+    { key: 'mae_amamentando_sem_intercorrencias', nome: 'Sem Intercorrências' },
+    { key: 'mae_amamentando_com_dor', nome: 'Com Dor' },
+    { key: 'mae_nao_conseguindo_amamentar', nome: 'Não Conseguindo Amamentar' },
+    { key: 'mae_impossibilitada_amamentar', nome: 'Impossibilitada Amamentar' },
+    { key: 'mae_fissura_mamilar', nome: 'Fissura Mamilar' },
+    { key: 'mae_ingurgitamento_mamario', nome: 'Ingurgitamento Mamário' },
+    { key: 'mae_mastite', nome: 'Mastite' },
+    { key: 'mae_outra_alteracao_mama', nome: 'Outra Alteração na Mama' },
+    { key: 'mae_nao_deseja_amamentar', nome: 'Não Deseja Amamentar' },
+  ]
+
+  const dadosMae = indicadoresMae.map(indicador => ({
+    nome: indicador.nome,
+    quantidade: registrosFiltrados.filter(r => r[indicador.key]).length,
+    nomes: registrosFiltrados.filter(r => r[indicador.key]).map(r => r.nome_bebe)
+  }))
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -424,21 +442,36 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-card rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Indicadores de Aleitamento</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={dadosAleitamento}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="nome" />
-              <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="quantidade" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      {/* Gráfico principal de Aleitamento */}
+      <div className="bg-card rounded-lg shadow p-6 mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Indicadores de Aleitamento</h3>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={dadosAleitamento}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="nome" angle={-20} textAnchor="end" interval={0} height={70} />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="quantidade" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
+      {/* Gráfico de Indicadores da Mãe */}
+      <div className="bg-card rounded-lg shadow p-6 mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Indicadores da Mãe</h3>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={dadosMae}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="nome" angle={-20} textAnchor="end" interval={0} height={70} />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="quantidade" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Gráficos de distribuição por gênero e tipo de termo */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Distribuição por Gênero</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -461,7 +494,6 @@ const Dashboard = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-
         <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Distribuição por Tipo de Termo</h3>
           <ResponsiveContainer width="100%" height={300}>
