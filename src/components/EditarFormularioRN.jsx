@@ -1,41 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { format } from 'date-fns'
-import { v4 as uuidv4 } from 'uuid'
 import { Save, Calendar, User, Users } from 'lucide-react'
 
-const FormularioRN = () => {
-  const [formData, setFormData] = useState({
-    id: uuidv4(),
-    data_cadastro: format(new Date(), 'yyyy-MM-dd'),
-    nome_bebe: '',
-    genero: '',
-    tipo_termo: '',
-    // Checkboxes para aleitamento
-    amamentado_diretamente_seio: false,
-    amamentado_leite_sonda_dedo: false,
-    amamentado_leite_mamadeira: false,
-    amamentado_leite_copinho: false,
-    em_relactacao: false,
-    em_livre_demanda: false,
-    aleitamento_exclusivo: false,
-    aleitamento_predominante: false,
-    aleitamento_parcial: false,
-    uso_formula: false,
-    uso_formula_sonda_dedo: false,
-    uso_formula_mamadeira: false,
-    uso_formula_copinho: false,
-    em_translactacao: false,
-    // Checkboxes para situação da mãe
-    mae_amamentando_sem_intercorrencias: false,
-    mae_amamentando_com_dor: false,
-    mae_nao_conseguindo_amamentar: false,
-    mae_impossibilitada_amamentar: false,
-    mae_fissura_mamilar: false,
-    mae_ingurgitamento_mamario: false,
-    mae_mastite: false,
-    mae_outra_alteracao_mama: false,
-    mae_nao_deseja_amamentar: false,
-  })
+const EditarFormularioRN = () => {
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const [formData, setFormData] = useState(null)
+  const [carregando, setCarregando] = useState(true)
+
+  useEffect(() => {
+    const registros = JSON.parse(localStorage.getItem('registros_rn') || '[]')
+    const registro = registros.find(r => r.id === id)
+    if (registro) {
+      setFormData(registro)
+    }
+    setCarregando(false)
+  }, [id])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -47,8 +28,6 @@ const FormularioRN = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
-    // Validação básica
     if (!formData.nome_bebe.trim()) {
       alert('Por favor, informe o nome do bebê.')
       return
@@ -61,45 +40,12 @@ const FormularioRN = () => {
       alert('Por favor, selecione o tipo de termo.')
       return
     }
-
-    // Salvar no localStorage (simulando banco de dados)
+    // Atualizar registro no localStorage
     const registros = JSON.parse(localStorage.getItem('registros_rn') || '[]')
-    registros.push(formData)
-    localStorage.setItem('registros_rn', JSON.stringify(registros))
-
-    alert('Formulário salvo com sucesso!')
-    
-    // Limpar formulário para novo registro
-    setFormData({
-      id: uuidv4(),
-      data_cadastro: format(new Date(), 'yyyy-MM-dd'),
-      nome_bebe: '',
-      genero: '',
-      tipo_termo: '',
-      amamentado_diretamente_seio: false,
-      amamentado_leite_sonda_dedo: false,
-      amamentado_leite_mamadeira: false,
-      amamentado_leite_copinho: false,
-      em_relactacao: false,
-      em_livre_demanda: false,
-      aleitamento_exclusivo: false,
-      aleitamento_predominante: false,
-      aleitamento_parcial: false,
-      uso_formula: false,
-      uso_formula_sonda_dedo: false,
-      uso_formula_mamadeira: false,
-      uso_formula_copinho: false,
-      em_translactacao: false,
-      mae_amamentando_sem_intercorrencias: false,
-      mae_amamentando_com_dor: false,
-      mae_nao_conseguindo_amamentar: false,
-      mae_impossibilitada_amamentar: false,
-      mae_fissura_mamilar: false,
-      mae_ingurgitamento_mamario: false,
-      mae_mastite: false,
-      mae_outra_alteracao_mama: false,
-      mae_nao_deseja_amamentar: false,
-    })
+    const novosRegistros = registros.map(r => r.id === id ? formData : r)
+    localStorage.setItem('registros_rn', JSON.stringify(novosRegistros))
+    alert('Registro atualizado com sucesso!')
+    navigate('/pesquisa')
   }
 
   const CheckboxGroup = ({ title, items }) => (
@@ -111,7 +57,7 @@ const FormularioRN = () => {
             <input
               type="checkbox"
               name={item.name}
-              checked={formData[item.name]}
+              checked={!!formData[item.name]}
               onChange={handleInputChange}
               className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
             />
@@ -151,14 +97,16 @@ const FormularioRN = () => {
     { name: 'mae_nao_deseja_amamentar', label: 'Mãe não apresenta desejo em amamentar' },
   ]
 
+  if (carregando) return <div>Carregando...</div>
+  if (!formData) return <div>Registro não encontrado.</div>
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-card rounded-lg shadow-lg p-6">
         <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
           <Calendar className="h-6 w-6" />
-          Indicadores de Aleitamento Materno
+          Editar Indicadores de Aleitamento Materno
         </h2>
-
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Dados básicos */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -176,7 +124,6 @@ const FormularioRN = () => {
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 <User className="h-4 w-4 inline mr-1" />
@@ -192,7 +139,6 @@ const FormularioRN = () => {
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 <Users className="h-4 w-4 inline mr-1" />
@@ -211,7 +157,6 @@ const FormularioRN = () => {
                 <option value="outro">Outro</option>
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Idade Gestacional
@@ -230,13 +175,10 @@ const FormularioRN = () => {
               </select>
             </div>
           </div>
-
           {/* Checkboxes de aleitamento */}
           <CheckboxGroup title="Indicadores de Aleitamento" items={aleitamentoItems} />
-
           {/* Checkboxes da mãe */}
           <CheckboxGroup title="Situação da Mãe" items={maeItems} />
-
           {/* Botão de envio */}
           <div className="flex justify-end pt-6">
             <button
@@ -244,7 +186,7 @@ const FormularioRN = () => {
               className="bg-primary text-primary-foreground px-6 py-3 rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2 font-medium"
             >
               <Save className="h-4 w-4" />
-              Salvar Formulário
+              Salvar Alterações
             </button>
           </div>
         </form>
@@ -253,5 +195,4 @@ const FormularioRN = () => {
   )
 }
 
-export default FormularioRN
-
+export default EditarFormularioRN 

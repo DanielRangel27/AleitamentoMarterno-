@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Search, User, Calendar, FileText } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const Pesquisa = () => {
   const [registros, setRegistros] = useState([])
   const [termoPesquisa, setTermoPesquisa] = useState('')
   const [resultados, setResultados] = useState([])
   const [registroSelecionado, setRegistroSelecionado] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const dados = JSON.parse(localStorage.getItem('registros_rn') || '[]')
@@ -130,6 +132,31 @@ const Pesquisa = () => {
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       {formatarData(registro.data_cadastro)}
+                    </div>
+                    {/* Botões de ação */}
+                    <div className="flex gap-2 ml-4">
+                      <button
+                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        onClick={e => {
+                          e.stopPropagation();
+                          navigate(`/editar/${registro.id}`)
+                        }}
+                      >Editar</button>
+                      <button
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        onClick={e => {
+                          e.stopPropagation();
+                          if (window.confirm('Tem certeza que deseja deletar este registro?')) {
+                            const novosRegistros = registros.filter(r => r.id !== registro.id)
+                            localStorage.setItem('registros_rn', JSON.stringify(novosRegistros))
+                            setRegistros(novosRegistros)
+                            setResultados(resultados.filter(r => r.id !== registro.id))
+                            if (registroSelecionado && registroSelecionado.id === registro.id) {
+                              setRegistroSelecionado(null)
+                            }
+                          }
+                        }}
+                      >Deletar</button>
                     </div>
                   </div>
                 </div>

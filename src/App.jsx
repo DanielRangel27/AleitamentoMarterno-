@@ -4,6 +4,7 @@ import { Baby, BarChart3, Search, FileText } from 'lucide-react'
 import FormularioRN from './components/FormularioRN'
 import Dashboard from './components/Dashboard'
 import Pesquisa from './components/Pesquisa'
+import EditarFormularioRN from './components/EditarFormularioRN'
 import './App.css'
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
             <Route path="/" element={<FormularioRN />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/pesquisa" element={<Pesquisa />} />
+            <Route path="/editar/:id" element={<EditarFormularioRN />} />
           </Routes>
         </main>
       </div>
