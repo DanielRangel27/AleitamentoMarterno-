@@ -119,7 +119,8 @@ const Pesquisa = () => {
                   className="border border-border rounded-lg p-4 hover:bg-accent cursor-pointer transition-colors"
                   onClick={() => selecionarRegistro(registro)}
                 >
-                  <div className="flex items-center justify-between">
+                  {/* Layout Desktop */}
+                  <div className="hidden md:flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <User className="h-5 w-5 text-primary" />
                       <div>
@@ -133,17 +134,16 @@ const Pesquisa = () => {
                       <Calendar className="h-4 w-4" />
                       {formatarData(registro.data_cadastro)}
                     </div>
-                    {/* Botões de ação */}
                     <div className="flex gap-2 ml-4">
                       <button
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                         onClick={e => {
                           e.stopPropagation();
                           navigate(`/editar/${registro.id}`)
                         }}
                       >Editar</button>
                       <button
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
                         onClick={e => {
                           e.stopPropagation();
                           if (window.confirm('Tem certeza que deseja deletar este registro?')) {
@@ -157,6 +157,51 @@ const Pesquisa = () => {
                           }
                         }}
                       >Deletar</button>
+                    </div>
+                  </div>
+
+                  {/* Layout Mobile */}
+                  <div className="md:hidden space-y-3">
+                    <div className="flex items-center gap-3">
+                      <User className="h-5 w-5 text-primary" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-foreground">{registro.nome_bebe}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {formatarGenero(registro.genero)} • {formatarTipoTermo(registro.tipo_termo)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4" />
+                        {formatarData(registro.data_cadastro)}
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <button
+                          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                          onClick={e => {
+                            e.stopPropagation();
+                            navigate(`/editar/${registro.id}`)
+                          }}
+                        >Editar</button>
+                        <button
+                          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                          onClick={e => {
+                            e.stopPropagation();
+                            if (window.confirm('Tem certeza que deseja deletar este registro?')) {
+                              const novosRegistros = registros.filter(r => r.id !== registro.id)
+                              localStorage.setItem('registros_rn', JSON.stringify(novosRegistros))
+                              setRegistros(novosRegistros)
+                              setResultados(resultados.filter(r => r.id !== registro.id))
+                              if (registroSelecionado && registroSelecionado.id === registro.id) {
+                                setRegistroSelecionado(null)
+                              }
+                            }
+                          }}
+                        >Deletar</button>
+                      </div>
                     </div>
                   </div>
                 </div>

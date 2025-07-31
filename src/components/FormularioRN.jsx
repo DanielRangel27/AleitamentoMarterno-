@@ -124,7 +124,7 @@ const FormularioRN = () => {
 
   const aleitamentoItems = [
     { name: 'amamentado_diretamente_seio', label: 'RN está sendo amamentado diretamente pelo seio materno' },
-    { name: 'amamentado_leite_sonda_dedo', label: 'RN está sendo amamentado com leite materno por sonda-dedo' },
+    { name: 'amamentado_leite_sonda_dedo', label: 'RN está sendo amamentado com leite materno por finger feeding' },
     { name: 'amamentado_leite_mamadeira', label: 'RN está sendo amamentado com leite materno através de mamadeira' },
     { name: 'amamentado_leite_copinho', label: 'RN está sendo amamentado com leite materno através de copinho' },
     { name: 'em_relactacao', label: 'RN está em relactação' },
@@ -133,7 +133,7 @@ const FormularioRN = () => {
     { name: 'aleitamento_predominante', label: 'RN está em aleitamento materno predominante' },
     { name: 'aleitamento_parcial', label: 'RN está em aleitamento materno parcial' },
     { name: 'uso_formula', label: 'RN está em uso de fórmula' },
-    { name: 'uso_formula_sonda_dedo', label: 'RN está em uso de fórmula por sonda-dedo' },
+    { name: 'uso_formula_sonda_dedo', label: 'RN está em uso de fórmula por finger feeding' },
     { name: 'uso_formula_mamadeira', label: 'RN está em uso de fórmula através de mamadeira' },
     { name: 'uso_formula_copinho', label: 'RN está em uso de fórmula através de copinho' },
     { name: 'em_translactacao', label: 'RN está em translactação' },

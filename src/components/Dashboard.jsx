@@ -11,11 +11,29 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Download, Filter, Calendar, Users, Upload } from 'lucide-react';
+import { Download, Filter, Calendar, Users, Upload, LogIn } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
+import { useAuth } from '../context/AuthContext';
 
-const Dashboard = () => {
+// Hook para detectar se é dispositivo móvel
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
+
+const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
   const [registros, setRegistros] = useState([]);
   const fileInputRef = useRef(null);
   const [filtros, setFiltros] = useState({
@@ -24,6 +42,9 @@ const Dashboard = () => {
     genero: '',
     tipoTermo: '',
   });
+  
+  const auth = useAuth && useAuth();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const dados = JSON.parse(localStorage.getItem('registros_rn') || '[]');
@@ -291,16 +312,16 @@ const Dashboard = () => {
   // Dados para gráficos
   const indicadoresAleitamento = [
     { key: 'amamentado_diretamente_seio', nome: 'Amamentação Direta' },
-    { key: 'amamentado_leite_sonda_dedo', nome: 'Leite Sonda-Dedo' },
+    { key: 'amamentado_leite_sonda_dedo', nome: 'Leite Finger Feeding' },
     { key: 'amamentado_leite_mamadeira', nome: 'Leite Mamadeira' },
     { key: 'amamentado_leite_copinho', nome: 'Leite Copinho' },
     { key: 'em_relactacao', nome: 'Relactação' },
     { key: 'em_livre_demanda', nome: 'Livre Demanda' },
-    { key: 'aleitamento_exclusivo', nome: 'Aleitamento Exclusivo' },
-    { key: 'aleitamento_predominante', nome: 'Aleitamento Predominante' },
-    { key: 'aleitamento_parcial', nome: 'Aleitamento Parcial' },
+    { key: 'aleitamento_exclusivo', nome: 'Aleit. Exclusivo' },
+    { key: 'aleitamento_predominante', nome: 'Aleit. Predominante' },
+    { key: 'aleitamento_parcial', nome: 'Aleit. Parcial' },
     { key: 'uso_formula', nome: 'Uso de Fórmula' },
-    { key: 'uso_formula_sonda_dedo', nome: 'Fórmula Sonda-Dedo' },
+    { key: 'uso_formula_sonda_dedo', nome: 'Fórmula Finger Feeding' },
     { key: 'uso_formula_mamadeira', nome: 'Fórmula Mamadeira' },
     { key: 'uso_formula_copinho', nome: 'Fórmula Copinho' },
     { key: 'em_translactacao', nome: 'Translactação' },
@@ -358,12 +379,12 @@ const Dashboard = () => {
   const indicadoresMae = [
     { key: 'mae_amamentando_sem_intercorrencias', nome: 'Sem Intercorrências' },
     { key: 'mae_amamentando_com_dor', nome: 'Com Dor' },
-    { key: 'mae_nao_conseguindo_amamentar', nome: 'Não Conseguindo Amamentar' },
-    { key: 'mae_impossibilitada_amamentar', nome: 'Impossibilitada Amamentar' },
+    { key: 'mae_nao_conseguindo_amamentar', nome: 'Não Consegue Amamentar' },
+    { key: 'mae_impossibilitada_amamentar', nome: 'Impossibilitada' },
     { key: 'mae_fissura_mamilar', nome: 'Fissura Mamilar' },
-    { key: 'mae_ingurgitamento_mamario', nome: 'Ingurgitamento Mamário' },
+    { key: 'mae_ingurgitamento_mamario', nome: 'Ingurgitamento' },
     { key: 'mae_mastite', nome: 'Mastite' },
-    { key: 'mae_outra_alteracao_mama', nome: 'Outra Alteração na Mama' },
+    { key: 'mae_outra_alteracao_mama', nome: 'Outras Alterações' },
     { key: 'mae_nao_deseja_amamentar', nome: 'Não Deseja Amamentar' },
   ];
 
@@ -403,34 +424,39 @@ const Dashboard = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
         <div className="flex gap-2">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={importarDados}
-            accept=".xlsx,.xls,.csv"
-            style={{ display: 'none' }}
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-secondary text-secondary-foreground px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2"
-          >
-            <Upload className="h-4 w-4" />
-            Importar
-          </button>
-          <button
-            onClick={exportarExcel}
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Excel
-          </button>
-          <button
-            onClick={exportarCSV}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
-            CSV
-          </button>
+          {showLoginButton ? (
+            <button
+              onClick={onLoginClick}
+              className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+            >
+              <LogIn className="h-4 w-4" />
+              Fazer Login
+            </button>
+          ) : (
+            <>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={importarDados}
+                accept=".xlsx,.xls,.csv"
+                style={{ display: 'none' }}
+              />
+              <button
+                onClick={exportarExcel}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Excel
+              </button>
+              <button
+                onClick={exportarCSV}
+                className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                CSV
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -440,7 +466,7 @@ const Dashboard = () => {
           <Filter className="h-5 w-5" />
           Filtros
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               <Calendar className="h-4 w-4 inline mr-1" />
@@ -536,19 +562,27 @@ const Dashboard = () => {
         <h3 className="text-lg font-semibold text-foreground mb-4">
           Indicadores de Aleitamento
         </h3>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={dadosAleitamento}>
+        <ResponsiveContainer width="100%" height={isMobile ? 400 : 350}>
+          <BarChart 
+            data={dadosAleitamento} 
+            layout="horizontal"
+            margin={isMobile ? { top: 10, right: 30, left: 30, bottom: 120 } : { top: 10, right: 30, left: 30, bottom: 80 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="nome"
-              angle={-20}
+              angle={isMobile ? -90 : -35}
               textAnchor="end"
               interval={0}
-              height={70}
+              height={isMobile ? 115 : 75}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
             />
             <YAxis />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="quantidade" fill="#8884d8" />
+            <Bar 
+              dataKey="quantidade" 
+              fill="#8884d8"
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -558,30 +592,38 @@ const Dashboard = () => {
         <h3 className="text-lg font-semibold text-foreground mb-4">
           Indicadores da Mãe
         </h3>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={dadosMae}>
+        <ResponsiveContainer width="100%" height={isMobile ? 400 : 350}>
+          <BarChart 
+            data={dadosMae} 
+            layout="horizontal"
+            margin={isMobile ? { top: 10, right: 30, left: 30, bottom: 120 } : { top: 10, right: 30, left: 30, bottom: 80 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="nome"
-              angle={-20}
+              angle={isMobile ? -90 : -35}
               textAnchor="end"
               interval={0}
-              height={70}
+              height={isMobile ? 115 : 75}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
             />
             <YAxis />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="quantidade" fill="#82ca9d" />
+            <Bar 
+              dataKey="quantidade" 
+              fill="#82ca9d"
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Gráficos de distribuição por gênero e tipo de termo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
         <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Distribuição por Gênero
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <PieChart>
               <Pie
                 data={dadosGenero}
@@ -589,7 +631,7 @@ const Dashboard = () => {
                 cy="50%"
                 labelLine={false}
                 label={({ nome, quantidade }) => `${nome}: ${quantidade}`}
-                outerRadius={80}
+                outerRadius={isMobile ? 60 : 80}
                 fill="#8884d8"
                 dataKey="quantidade"
               >
@@ -603,9 +645,9 @@ const Dashboard = () => {
         </div>
         <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
-            Distribuição por Tipo de Termo
+            Distribuição por Idade Gestacional
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <PieChart>
               <Pie
                 data={dadosTermo}
@@ -613,7 +655,7 @@ const Dashboard = () => {
                 cy="50%"
                 labelLine={false}
                 label={({ nome, quantidade }) => `${nome}: ${quantidade}`}
-                outerRadius={80}
+                outerRadius={isMobile ? 60 : 80}
                 fill="#8884d8"
                 dataKey="quantidade"
               >
