@@ -28,10 +28,6 @@ const EditarFormularioRN = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!formData.nome_bebe.trim()) {
-      alert('Por favor, informe o nome do bebê.')
-      return
-    }
     if (!formData.genero) {
       alert('Por favor, selecione o gênero.')
       return
@@ -109,7 +105,7 @@ const EditarFormularioRN = () => {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Dados básicos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 <Calendar className="h-4 w-4 inline mr-1" />
@@ -120,21 +116,6 @@ const EditarFormularioRN = () => {
                 name="data_cadastro"
                 value={formData.data_cadastro}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                <User className="h-4 w-4 inline mr-1" />
-                Nome do Bebê
-              </label>
-              <input
-                type="text"
-                name="nome_bebe"
-                value={formData.nome_bebe}
-                onChange={handleInputChange}
-                placeholder="Digite o nome do bebê"
                 className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />

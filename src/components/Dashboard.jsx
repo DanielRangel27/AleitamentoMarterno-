@@ -87,7 +87,6 @@ const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
     const dadosParaExportar = registrosFiltrados.map((registro) => ({
       ID: registro.id,
       Data: registro.data_cadastro,
-      'Nome do Bebê': registro.nome_bebe,
       Gênero: registro.genero,
       'Tipo de Termo': registro.tipo_termo,
       'Amamentado Diretamente Seio': registro.amamentado_diretamente_seio
@@ -165,7 +164,6 @@ const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
         const registrosImportados = jsonData.map((row) => ({
           id: row['ID'] || uuidv4(),
           data_cadastro: row['Data'] || new Date().toISOString().split('T')[0],
-          nome_bebe: row['Nome do Bebê'] || '',
           genero: row['Gênero'] || '',
           tipo_termo: row['Tipo de Termo'] || '',
           amamentado_diretamente_seio:
@@ -231,7 +229,6 @@ const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
     const headers = [
       'ID',
       'Data',
-      'Nome do Bebê',
       'Gênero',
       'Tipo de Termo',
       'Amamentado Diretamente Seio',
@@ -265,7 +262,6 @@ const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
         [
           registro.id,
           registro.data_cadastro,
-          `"${registro.nome_bebe}"`,
           registro.genero,
           registro.tipo_termo,
           registro.amamentado_diretamente_seio ? 'Sim' : 'Não',
@@ -330,9 +326,6 @@ const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
   const dadosAleitamento = indicadoresAleitamento.map((indicador) => ({
     nome: indicador.nome,
     quantidade: registrosFiltrados.filter((r) => r[indicador.key]).length,
-    nomes: registrosFiltrados
-      .filter((r) => r[indicador.key])
-      .map((r) => r.nome_bebe),
   }));
 
   const dadosGenero = [
@@ -391,28 +384,14 @@ const Dashboard = ({ showLoginButton = false, onLoginClick }) => {
   const dadosMae = indicadoresMae.map((indicador) => ({
     nome: indicador.nome,
     quantidade: registrosFiltrados.filter((r) => r[indicador.key]).length,
-    nomes: registrosFiltrados
-      .filter((r) => r[indicador.key])
-      .map((r) => r.nome_bebe),
   }));
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
       return (
         <div className="bg-card p-3 border border-border rounded-lg shadow-lg">
           <p className="font-semibold">{label}</p>
           <p className="text-primary">Quantidade: {payload[0].value}</p>
-          {data.nomes && data.nomes.length > 0 && (
-            <div className="mt-2">
-              <p className="text-sm font-medium">Bebês:</p>
-              <ul className="text-xs text-muted-foreground">
-                {data.nomes.map((nome, index) => (
-                  <li key={index}>• {nome}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       );
     }

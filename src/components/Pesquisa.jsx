@@ -21,7 +21,7 @@ const Pesquisa = () => {
     }
 
     const resultadosFiltrados = registros.filter(registro =>
-      registro.nome_bebe.toLowerCase().includes(termoPesquisa.toLowerCase())
+      registro.data_cadastro.includes(termoPesquisa)
     )
     setResultados(resultadosFiltrados)
   }, [termoPesquisa, registros])
@@ -92,10 +92,10 @@ const Pesquisa = () => {
       {/* Campo de pesquisa */}
       <div className="bg-card rounded-lg shadow p-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <input
-            type="text"
-            placeholder="Digite o nome do bebê para pesquisar..."
+            type="date"
+            placeholder="Selecione a data de cadastro..."
             value={termoPesquisa}
             onChange={handlePesquisa}
             className="w-full pl-10 pr-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-lg"
@@ -122,17 +122,16 @@ const Pesquisa = () => {
                   {/* Layout Desktop */}
                   <div className="hidden md:flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <User className="h-5 w-5 text-primary" />
+                      <Calendar className="h-5 w-5 text-primary" />
                       <div>
-                        <h4 className="font-semibold text-foreground">{registro.nome_bebe}</h4>
+                        <h4 className="font-semibold text-foreground">{formatarData(registro.data_cadastro)}</h4>
                         <p className="text-sm text-muted-foreground">
                           {formatarGenero(registro.genero)} • {formatarTipoTermo(registro.tipo_termo)}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      {formatarData(registro.data_cadastro)}
+                      ID: {registro.id.substring(0, 8)}
                     </div>
                     <div className="flex gap-2 ml-4">
                       <button
@@ -163,9 +162,9 @@ const Pesquisa = () => {
                   {/* Layout Mobile */}
                   <div className="md:hidden space-y-3">
                     <div className="flex items-center gap-3">
-                      <User className="h-5 w-5 text-primary" />
+                      <Calendar className="h-5 w-5 text-primary" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-foreground">{registro.nome_bebe}</h4>
+                        <h4 className="font-semibold text-foreground">{formatarData(registro.data_cadastro)}</h4>
                         <p className="text-sm text-muted-foreground">
                           {formatarGenero(registro.genero)} • {formatarTipoTermo(registro.tipo_termo)}
                         </p>
@@ -174,8 +173,7 @@ const Pesquisa = () => {
                     
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        {formatarData(registro.data_cadastro)}
+                        ID: {registro.id.substring(0, 8)}
                       </div>
                       
                       <div className="flex gap-2">
@@ -220,11 +218,7 @@ const Pesquisa = () => {
           </div>
 
           {/* Dados básicos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-accent rounded-lg p-4">
-              <h4 className="font-semibold text-foreground mb-2">Nome do Bebê</h4>
-              <p className="text-lg">{registroSelecionado.nome_bebe}</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <div className="bg-accent rounded-lg p-4">
               <h4 className="font-semibold text-foreground mb-2">Data de Cadastro</h4>
               <p className="text-lg">{formatarData(registroSelecionado.data_cadastro)}</p>
